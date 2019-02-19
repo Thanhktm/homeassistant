@@ -1,0 +1,263 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: 21.2798384
+  longitude: 105.7204945
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 1000
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Asia/Ho_Chi_Minh
+  # Customization file
+  customize: !include customize.yaml
+
+# Show links to resources in log and frontend
+introduction:
+
+# Enables the frontend
+frontend:
+  themes: !include themes.yaml
+
+lovelace:
+  mode: yaml
+
+# Enables configuration UI
+config:
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+http:
+  base_url: !secret base_url
+  ssl_key: !secret ssl_key
+  ssl_certificate: !secret ssl_certificate
+
+
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  # include_used_components: true
+
+# Discover some devices automatically
+discovery:
+
+device_tracker:
+  - platform: bluetooth_tracker
+  
+mqtt:
+  broker: 192.168.1.111
+  username: admin
+  password: admin
+
+switch:
+  - platform: mqtt
+    name: "Phòng khách"
+    command_topic: "cmnd/sonoff/power"
+    state_topic: "stat/sonoff/POWER"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+    
+  - platform: mqtt
+    name: "Phòng khách phụ"
+    command_topic: "cmnd/sonoffLight1/power"
+    state_topic: "stat/sonoffLight1/POWER"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+  
+  - platform: mqtt
+    name: "Bếp"
+    command_topic: "cmnd/sonoffLight2/power"
+    state_topic: "stat/sonoffLight2/POWER"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+    
+  - platform: mqtt
+    name: "Cửa"
+    command_topic: "cmnd/sonoffLight3/power"
+    state_topic: "stat/sonoffLight3/POWER"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+    
+  - platform: mqtt
+    name: "Cầu Thang 1"
+    command_topic: "cmnd/sonoffLight4/power"
+    state_topic: "stat/sonoffLight4/POWER"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+    
+  - platform: mqtt
+    name: "Nhà Tắm 2"
+    command_topic: "cmnd/sonoffLight5/power"
+    state_topic: "stat/sonoffLight5/POWER"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+    
+  - platform: mqtt
+    name: "Đèn Trần Phòng Bếp"
+    command_topic: "cmnd/sonoffFan1/power"
+    state_topic: "stat/sonoffFan1/POWER1"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+    optimistic: false
+    
+  - platform: mqtt
+    name: "Đèn Trần Phòng Khách"
+    command_topic: "cmnd/sonoffFan2/power"
+    state_topic: "stat/sonoffFan2/POWER1"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+    optimistic: false
+    
+fan:
+  - platform: mqtt  
+    name: "Quạt Trần Phòng Khách"
+    command_topic: "cmnd/sonoffFan2/FanSpeed"
+    speed_command_topic: "cmnd/sonoffFan2/FanSpeed"    
+    state_topic: "stat/sonoffFan2/RESULT"
+    speed_state_topic: "stat/sonoffFan2/RESULT"
+    state_value_template: >
+      {% if value_json.FanSpeed is defined %}
+        {% if value_json.FanSpeed == 0 -%}0{%- elif value_json.FanSpeed > 0 -%}4{%- endif %}
+      {% else %}
+        {% if states.fan.quat_tran_phong_khach.state == 'off' -%}0{%- elif states.fan.quat_tran_phong_khach.state == 'on' -%}4{%- endif %}
+      {% endif %}
+    speed_value_template: "{{ value_json.FanSpeed }}"
+    availability_topic: tele/sonoffFan2/LWT
+    payload_off: "0"
+    payload_on: "4"
+    payload_low_speed: "1"
+    payload_medium_speed: "2"
+    payload_high_speed: "3"
+    payload_available: Online
+    payload_not_available: Offline
+    speeds:
+      - 'off'
+      - low
+      - medium
+      - high
+    
+  - platform: mqtt  
+    name: "Quạt Trần Phòng Bếp"
+    command_topic: "cmnd/sonoffFan1/FanSpeed"
+    speed_command_topic: "cmnd/sonoffFan1/FanSpeed"    
+    state_topic: "stat/sonoffFan1/RESULT"
+    speed_state_topic: "stat/sonoffFan1/RESULT"
+    state_value_template: >
+      {% if value_json.FanSpeed is defined %}
+        {% if value_json.FanSpeed == 0 -%}0{%- elif value_json.FanSpeed > 0 -%}4{%- endif %}
+      {% else %}
+        {% if states.fan.quat_tran_phong_bep.state == 'off' -%}0{%- elif states.fan.quat_tran_phong_bep.state == 'on' -%}4{%- endif %}
+      {% endif %}
+    speed_value_template: "{{ value_json.FanSpeed }}"
+    availability_topic: tele/sonoffFan1/LWT
+    payload_off: "0"
+    payload_on: "4"
+    payload_low_speed: "1"
+    payload_medium_speed: "2"
+    payload_high_speed: "3"
+    payload_available: Online
+    payload_not_available: Offline
+    speeds:
+      - 'off'
+      - low
+      - medium
+      - high
+    
+media_player:
+  - platform: broadlink
+    name: Living Room TV
+    host: 192.168.1.200
+    mac: '78:0f:77:b3:aa:01'
+    ircodes_ini: 'broadlink_media_codes/lg.ini'
+    
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time
+history:
+
+# View all events in a logbook
+logbook:
+
+# Enables a map showing the location of tracked devices
+#map:
+
+# Track the sun
+sun:
+
+# Sensors
+sensor:
+  - platform: yr
+    name: Weather
+    forecast: 24
+    monitored_conditions:
+      - temperature
+      - symbol
+      - precipitation
+      - windSpeed
+      - pressure
+      - windDirection
+      - humidity
+      - fog
+      - cloudiness
+      - lowClouds
+      - mediumClouds
+      - highClouds
+      - dewpointTemperature
+  
+weather:
+  - platform: darksky
+    api_key: 6f2bf79297668bf11a68baa3f649ebd8
+
+cast:
+  media_player:
+    - host: 192.168.1.3
+    
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time
+history:
+
+# View all events in a logbook
+logbook:
+
+# Enables a map showing the location of tracked devices
+map:
+
+# Track the sun
+sun:
+
+# Allow diagnosing system problems
+system_health:
+
+# Text to speech
+tts:
+  - platform: google
+
+# Cloud
+cloud:
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
