@@ -189,7 +189,30 @@ media_player:
     host: 192.168.1.200
     mac: '78:0f:77:b3:aa:01'
     ircodes_ini: 'broadlink_media_codes/lg.ini'
-    
+
+# climate:
+#   - platform: broadlink
+#     name: Living Room AC
+#     host: 192.168.0.200
+#     mac: '78:0f:77:b3:aa:01'
+#     ircodes_ini: 'broadlink_climate_codes/fujitsu.ini'
+#     min_temp: 18
+#     max_temp: 30
+#     target_temp: 26
+#     default_operation: 'off'
+#     default_fan_mode: low
+#     customize:
+#       operations:
+#         - 'off'
+#         - cool
+#         - heat
+#         - auto
+#       fan_modes:
+#         - low
+#         - mid
+#         - high
+#         - auto
+        
 # Allows you to issue voice commands from the frontend in enabled browsers
 conversation:
 
@@ -228,6 +251,7 @@ sensor:
 weather:
   - platform: darksky
     api_key: 6f2bf79297668bf11a68baa3f649ebd8
+    mode: daily
 
 cast:
   media_player:
